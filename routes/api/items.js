@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+// bring in middleware to process token
+const auth = require('../../middleware/auth');
+
 // Item Model
 const Item = require('../../models/Item');
 
@@ -16,8 +19,8 @@ router.get('/', (request, response) => {
 
 // POST api/items/add
 // Create an item
-// Public
-router.post('/add', (request, response) => {
+// Private (requires authentication)
+router.post('/add', auth, (request, response) => {
     const newItem = new Item({
         name: request.body.name
     });
@@ -29,8 +32,8 @@ router.post('/add', (request, response) => {
 
 // DELETE api/items/delete/:id
 // Delete an item
-// Public
-router.delete('/delete/:id', (request, response) => {
+// Private (requires authentication)
+router.delete('/delete/:id', auth, (request, response) => {
     Item.findById(request.params.id)
         .then(item => item.remove().then(() => response.json(`${item.name} was removed from the shopping list!`)))
         .catch(error => response.status(404).json(`Error: ${error}`));
